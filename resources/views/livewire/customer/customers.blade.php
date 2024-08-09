@@ -14,6 +14,10 @@
                         <input type="text" class="form-control" placeholder="الرقم التسلسلي" wire:model.live="serial_number">
                     </div>
                     <div class="col">
+                        <label for="exampleFormControlInput1" class="form-label">اسم المدين</label>
+                        <input type="text" class="form-control" placeholder="اسم المدين" wire:model.live="name_debtor">
+                    </div>
+                    <div class="col">
                         <label for="exampleFormControlInput1" class="form-label">من</label>
                         <input type="date" class="form-control" placeholder="تاريخ البيع" wire:model.live="start_date">
                     </div>
@@ -25,8 +29,8 @@
                         <label for="exampleFormControlInput1" class="form-label">الحالة</label>
                         <select class="form-control" wire:model.live="status_search">
                             <option value="0">الحالة</option>
-                            <option value="1">مكتمل</option>
-                            <option value="2">غير مكتمل</option>
+                            <option value="2">مكتمل</option>
+                            <option value="1">غير مكتمل</option>
                         </select>
                     </div>
                 </div>
@@ -43,7 +47,7 @@
                             <tr>
                                 <th class="text-uppercase text-secondary font-weight-bolder">الرقم التسلسلي</th>
                                 <th class="text-uppercase text-secondary font-weight-bolder">تاريخ البيع</th>
-                                <th class="text-uppercase text-secondary font-weight-bolder">اسم الكفيل</th>
+                                <th class="text-uppercase text-secondary font-weight-bolder">اسم المدين</th>
                                 <th class="text-uppercase text-secondary font-weight-bolder">السيارة</th>
                                 <th class="text-uppercase text-secondary font-weight-bolder">الحالة</th>
                                 <th class="text-uppercase text-secondary font-weight-bolder">الكشف التفصيلي</th>
@@ -60,10 +64,10 @@
                                         {{ date_format($val->date_of_sale,"Y/m/d") }}
                                     </td>
                                     <td>
-                                        {{ $val->debtor->name }}
+                                        {{ $val->debtorName }}
                                     </td>
                                     <td>
-                                        {{ $val->car->type }}
+                                        {{ $val->type }}
                                     </td>
                                     <td>
                                         @if($val->status == 2)

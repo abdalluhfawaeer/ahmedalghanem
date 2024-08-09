@@ -105,7 +105,7 @@
                                         <h6 class="text-center mb-0">عدد الاشهر</h6>
                                         <span class="text-xs">:</span>
                                         <hr class="horizontal dark my-3">
-                                        <h5 class="mb-0">{{ $totals['number_of_months'] }}</h5>
+                                        <h5 class="mb-0">{{ ceil($totals['number_of_months']) }}</h5>
                                     </div>
                                 </div>
                             </div>
@@ -128,7 +128,7 @@
                                 <div class="card">
                                     <br>
                                     <div class="card-body pt-0 p-3 text-center">
-                                        <h6 class="text-center mb-0">التمويل المربح</h6>
+                                        <h6 class="text-center mb-0"> المربح</h6>
                                         <span class="text-xs">:</span>
                                         <hr class="horizontal dark my-3">
                                         <h5 class="mb-0">{{ $totals['profitable_financing'] }}</h5>
@@ -149,7 +149,7 @@
                                         <h6 class="text-center mb-0">عدد الاقساط المدفوعة</h6>
                                         <span class="text-xs">:</span>
                                         <hr class="horizontal dark my-3">
-                                        <h5 class="mb-0">{{ $totals['total_installments_1'] }}</h5>
+                                        <h5 class="mb-0">{{ ceil($totals['total_installments_1']) }}</h5>
                                     </div>
                                 </div>
                             </div>
@@ -160,7 +160,7 @@
                                         <h6 class="text-center mb-0">عدد الاقساط الغير مدفوعة</h6>
                                         <span class="text-xs">:</span>
                                         <hr class="horizontal dark my-3">
-                                        <h5 class="mb-0">{{ $totals['total_installments_2'] }}</h5>
+                                        <h5 class="mb-0">{{ ceil($totals['total_installments_2']) }}</h5>
                                     </div>
                                 </div>
                             </div>
@@ -265,66 +265,92 @@
                         </select>
                     </div>
                     <div class="card-body pt-4 p-3">
-                        @foreach($monthlyInstallmentsList as $value)
-                            @if(($status_search > 0 && $status_search == $value['status']) || $status_search == 0)
-                                <div class="row">
-                                    <div class="col-md-2">
-                                        <input type="text" class="form-control"  value="{{ $value['month'] }}" disabled>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <input type="text" class="form-control"
-                                               value="{{ $value['installment'] }}"
-                                               disabled>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <button class="btn btn-sm mb-0 me-3" style="background: green;color: white" wire:loading.attr="disabled"
-                                                wire:click="setMonthlyInstallments('{{ $value['month'] }}',1,{{ $value['installment'] }})">
-                                            <span wire:loading.remove wire.target="setMonthlyInstallments"><i class="fas fa-plus" aria-hidden="true"></i>  مدفوع</span>
-                                            <span wire:loading wire.target="setMonthlyInstallments" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                        </button>
-                                        <button class="btn btn-sm mb-0 me-3" style="background: red;color: white" wire:loading.attr="disabled"
-                                                wire:click="setMonthlyInstallments('{{ $value['month'] }}',2,{{ $value['installment'] }})">
-                                            <span wire:loading.remove wire.target="setMonthlyInstallments"><i class="fas fa-plus" aria-hidden="true"></i>  غير مدفوع</span>
-                                            <span wire:loading wire.target="setMonthlyInstallments" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                        </button>
-                                        <button class="btn btn-sm mb-0 me-3" style="background: blue;color: white" wire:loading.attr="disabled"
-                                                wire:click="setMonthlyInstallments('{{ $value['month'] }}',3,{{ $value['installment'] }})">
-                                            <span wire:loading.remove wire.target="setMonthlyInstallments"><i class="fas fa-plus" aria-hidden="true"></i>  مؤجل</span>
-                                            <span wire:loading wire.target="setMonthlyInstallments" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                        </button>
-                                        <button class="btn btn-sm mb-0 me-3" style="background: black;color: white" wire:loading.attr="disabled"
-                                                wire:click="partPayment('{{ $value['month'] }}')">
-                                            <span wire:loading.remove wire.target="partPayment"><i class="fas fa-plus" aria-hidden="true"></i>  دفع جزء</span>
-                                            <span wire:loading wire.target="partPayment" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                        </button>
-                                    </div>
-                                    <div class="col-md-1">
-                                        @if($value['status'] == 1)
-                                            <span class="badge badge-sm bg-gradient-success">مدفوع</span>
-                                        @elseif($value['status'] == 2)
-                                            <span class="badge badge-sm bg-gradient-danger">غير مدفوع</span>
-                                        @elseif($value['status'] == 3)
-                                            <span class="badge badge-sm bg-gradient-danger" style="background: blue">مؤجل</span>
-                                        @else
-                                            <span class="badge badge-sm bg-gradient-danger" style="background: black">دفع جزء</span>
-                                        @endif
-                                    </div>
-                                    @if(isset($showPart[$value['month']]) && $showPart[$value['month']])
-                                        <div class="col-md-1">
-                                            <input type="text" class="form-control" placeholder="القمية" wire:model.defer="deferred_value.{{$value['month']}}">
-                                        </div>
-                                        <div class="col-md-1">
-                                            <button class="btn btn-sm mb-0 me-3" style="background: black;color: white" wire:loading.attr="disabled"
-                                                    wire:click="setMonthlyInstallments('{{ $value['month'] }}',4,{{ $value['installment'] }},1)">
-                                                <span wire:loading.remove wire.target="setMonthlyInstallments"><i class="fas fa-plus" aria-hidden="true"></i>  دفع</span>
-                                                <span wire:loading wire.target="setMonthlyInstallments" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                            </button>
-                                        </div>
+                        <dev class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">تاريخ القسط</th>
+                                    <th scope="col">المبلغ</th>
+                                    <th scope="col">العمليات</th>
+                                    <th scope="col">دفع جزء</th>
+                                    <th scope="col">الحالة</th>
+                                    <th scope="col">الملاحظات</th>
+                                    <th scope="col">#</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach($monthlyInstallmentsList as $key => $value)
+                                    @if(($status_search > 0 && $status_search == $value['status']) || $status_search == 0)
+                                        <tr>
+                                            <th>{{ ++$key }}</th>
+                                            <td>
+                                                <input type="text" class="form-control"  value="{{ $value['month'] }}" disabled>
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control"
+                                                       value="{{ $value['installment'] }}"
+                                                       disabled>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm mb-0 me-3" style="background: green;color: white" wire:loading.attr="disabled"
+                                                        wire:click="setMonthlyInstallments('{{ $value['month'] }}',1,{{ $value['installment'] }})">
+                                                    <span wire:loading.remove wire.target="setMonthlyInstallments"><i class="fas fa-plus" aria-hidden="true"></i>  مدفوع</span>
+                                                    <span wire:loading wire.target="setMonthlyInstallments" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                </button>
+                                                <button class="btn btn-sm mb-0 me-3" style="background: red;color: white" wire:loading.attr="disabled"
+                                                        wire:click="setMonthlyInstallments('{{ $value['month'] }}',2,{{ $value['installment'] }})">
+                                                    <span wire:loading.remove wire.target="setMonthlyInstallments"><i class="fas fa-plus" aria-hidden="true"></i>  غير مدفوع</span>
+                                                    <span wire:loading wire.target="setMonthlyInstallments" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                </button>
+                                                <button class="btn btn-sm mb-0 me-3" style="background: blue;color: white" wire:loading.attr="disabled"
+                                                        wire:click="setMonthlyInstallments('{{ $value['month'] }}',3,{{ $value['installment'] }})">
+                                                    <span wire:loading.remove wire.target="setMonthlyInstallments"><i class="fas fa-plus" aria-hidden="true"></i>  مؤجل</span>
+                                                    <span wire:loading wire.target="setMonthlyInstallments" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                </button>
+                                                <button class="btn btn-sm mb-0 me-3" style="background: black;color: white" wire:loading.attr="disabled"
+                                                        wire:click="partPayment('{{ $value['month'] }}')">
+                                                    <span wire:loading.remove wire.target="partPayment"><i class="fas fa-plus" aria-hidden="true"></i>  دفع جزء</span>
+                                                    <span wire:loading wire.target="partPayment" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                </button>
+                                            </td>
+                                            <td style="display: flex">
+                                                @if(isset($showPart[$value['month']]) && $showPart[$value['month']])
+                                                    <input type="text" class="form-control" placeholder="القمية" wire:model.defer="deferred_value.{{$value['month']}}">
+                                                    <button class="btn btn-sm mb-0 me-3" style="background: black;color: white" wire:loading.attr="disabled"
+                                                            wire:click="setMonthlyInstallments('{{ $value['month'] }}',4,{{ $value['installment'] }},1)">
+                                                        <span wire:loading.remove wire.target="setMonthlyInstallments"><i class="fas fa-plus" aria-hidden="true"></i>  دفع</span>
+                                                        <span wire:loading wire.target="setMonthlyInstallments" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                    </button>
+                                                @else
+                                                    <input type="text" class="form-control" disabled>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if($value['status'] == 1)
+                                                    <span class="badge badge-sm bg-gradient-success">مدفوع</span>
+                                                @elseif($value['status'] == 2)
+                                                    <span class="badge badge-sm bg-gradient-danger">غير مدفوع</span>
+                                                @elseif($value['status'] == 3)
+                                                    <span class="badge badge-sm bg-gradient-danger" style="background: blue">مؤجل</span>
+                                                @else
+                                                    <span class="badge badge-sm bg-gradient-danger" style="background: black">دفع جزء</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control"  value="sdfdsf">
+                                            </td>
+                                            <td>
+                                                <a href="/customer/edit/4" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
+                                                    <span style="color: #0d6efd">طباعة</span>
+                                                </a>
+                                            </td>
+                                        </tr>
                                     @endif
-                                </div>
-                                <br>
-                            @endif
-                        @endforeach
+                                @endforeach
+                                </tbody>
+                            </table>
+                        </dev>
                     </div>
                 </div>
             </div>

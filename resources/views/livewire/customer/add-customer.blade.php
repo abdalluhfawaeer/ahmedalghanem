@@ -41,6 +41,9 @@
                     <div class="col">
                         <label for="exampleFormControlInput1" class="form-label">رقم الهاتف 1</label>
                         <input type="text" class="form-control" placeholder="رقم الهاتف 1" wire:model.dafer="debtor_phone1">
+                        <div @error('debtor_phone1') class="alert alert-danger" role="alert" @enderror>
+                            @error('debtor_phone1') {{ $message }} @enderror
+                        </div>
                     </div>
                     <div class="col">
                         <label for="exampleFormControlInput1" class="form-label">رقم الهاتف 2</label>
@@ -56,6 +59,9 @@
                     <div class="col">
                         <label for="exampleFormControlInput1" class="form-label">عنوان السكن</label>
                         <input type="text" class="form-control" placeholder="عنوان السكن" wire:model.dafer="debtor_address">
+                        <div @error('debtor_address') class="alert alert-danger" role="alert" @enderror>
+                            @error('debtor_address') {{ $message }} @enderror
+                        </div>
                     </div>
                     <div class="col">
                         <label for="exampleFormControlInput1" class="form-label">عنوان العمل</label>
@@ -85,6 +91,9 @@
                     <div class="col">
                         <label for="exampleFormControlInput1" class="form-label">رقم الهاتف 1</label>
                         <input type="text" class="form-control" placeholder="رقم الهاتف 1" wire:model.dafer="sponsor_phone1">
+                        <div @error('sponsor_phone1') class="alert alert-danger" role="alert" @enderror>
+                            @error('sponsor_phone1') {{ $message }} @enderror
+                        </div>
                     </div>
                     <div class="col">
                         <label for="exampleFormControlInput1" class="form-label">رقم الهاتف 2</label>
@@ -100,6 +109,9 @@
                     <div class="col">
                         <label for="exampleFormControlInput1" class="form-label">عنوان السكن</label>
                         <input type="text" class="form-control" placeholder="عنوان السكن" wire:model.dafer="sponsor_address">
+                        <div @error('sponsor_address') class="alert alert-danger" role="alert" @enderror>
+                            @error('sponsor_address') {{ $message }} @enderror
+                        </div>
                     </div>
                     <div class="col">
                         <label for="exampleFormControlInput1" class="form-label">عنوان العمل</label>
@@ -112,7 +124,7 @@
                     <div class="col">
                         <label for="exampleFormControlInput1" class="form-label">مرهون الى</label>
                         <select class="form-control" id="exampleFormControlSelect1" wire:model.dafer="pawned_id">
-                            <option value="0">مرهون الى</option>
+                            <option value="">مرهون الى</option>
                             @foreach($pawned as $val)
                                 <option value="{{ $val->id }}">{{ $val->name }}</option>
                             @endforeach
@@ -124,7 +136,7 @@
                     <div class="col">
                         <label for="exampleFormControlInput1" class="form-label">السيارة</label>
                         <select class="form-control" id="exampleFormControlSelect1" wire:model.live="car_id">
-                            <option value="0">السيارة</option>
+                            <option value="">السيارة</option>
                             @foreach($car as $val)
                                 <option value="{{ $val->id }}">{{ $val->type }}</option>
                             @endforeach
@@ -177,7 +189,7 @@
                     </div>
                     <div class="col">
                         <label for="exampleFormControlInput1" class="form-label">عدد الاشهر</label>
-                        <input type="text" class="form-control" disabled value="{{ $number_of_months }}">
+                        <input type="text" class="form-control" disabled value="{{ ceil($number_of_months) }}">
                     </div>
                 </div>
                 <br>
@@ -187,7 +199,7 @@
                         <input type="text" class="form-control" disabled value="{{ $financing_amount }}">
                     </div>
                     <div class="col">
-                        <label for="exampleFormControlInput1" class="form-label">التمويل المربح</label>
+                        <label for="exampleFormControlInput1" class="form-label">المربح</label>
                         <input type="text" class="form-control"  disabled value="{{ $profitable_financing }}">
                     </div>
                 </div>

@@ -50,7 +50,11 @@ class AddCustomer extends Component
 
     protected $messages = [
         'debtor_name.required' => 'الحقل اجباري',
+        'debtor_phone1.required' => 'الحقل اجباري',
+        'debtor_address.required' => 'الحقل اجباري',
         'sponsor_name.required' => 'الحقل اجباري',
+        'sponsor_phone1.required' => 'الحقل اجباري',
+        'sponsor_address.required' => 'الحقل اجباري',
         'debtor_id_number.required' => 'الحقل اجباري',
         'serial_number.required' => 'الحقل اجباري',
         'date_of_sale.required' => 'الحقل اجباري',
@@ -121,7 +125,12 @@ class AddCustomer extends Component
     {
         $purchasing_price = 0;
         if ($this->car_id != '') {
-            $purchasing_price = Car::where('id',$this->car_id)->first()->purchasing_price;
+            $car = Car::where('id',$this->car_id)->first();
+            if ($car != null)
+            {
+                $purchasing_price = Car::where('id',$this->car_id)->first()->purchasing_price;
+            }
+            $purchasing_price = 0;
         }
 
         $this->total_installments = (float) $this->total_price - (float) $this->first_batch;
@@ -130,7 +139,7 @@ class AddCustomer extends Component
             $this->total_installments / (float) $this->monthly_installment : 0;
         $this->number_of_months = number_format($this->number_of_months ,2);
         $this->financing_amount = $purchasing_price - (float) $this->first_batch;
-        $this->profitable_financing = $this->total_installments - $purchasing_price;
+        $this->profitable_financing = (float) $this->total_price - $purchasing_price;
     }
 
     public function save()
@@ -141,7 +150,11 @@ class AddCustomer extends Component
 
         $this->validate([
             'debtor_name' => 'required',
+            'debtor_phone1' => 'required',
+            'debtor_address' => 'required',
             'sponsor_name' => 'required',
+            'sponsor_phone1' => 'required',
+            'sponsor_address' => 'required',
             'debtor_id_number' => 'required',
             'sponsor_id_number' => 'required',
             'serial_number' => ['required', $uniqueSerialRule],

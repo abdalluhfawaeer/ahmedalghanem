@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class MonthlyInstallment
- * 
+ *
  * @property int $id
  * @property int $customer_id
  * @property string $month
@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property float|null $deferred_value
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property Customer $customer
  *
  * @package App\Models
@@ -41,7 +41,8 @@ class MonthlyInstallment extends Model
 		'month',
 		'value',
 		'status',
-		'deferred_value'
+		'deferred_value',
+		'note',
 	];
 
 	public function customer()

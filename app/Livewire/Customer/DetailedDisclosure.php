@@ -63,7 +63,7 @@ class DetailedDisclosure extends Component
             'first_batch' => $data->first_batch,
             'monthly_installment' => $data->monthly_installment,
             'financing_amount' => $purchasing_price - (float) $data->first_batch,
-            'profitable_financing' => $data->total_installments - $purchasing_price,
+            'profitable_financing' => $data->total_price - $purchasing_price,
             'number_of_months' => number_format($number_of_months ,2),
             'total_installments' => $total_installments,
             'total_installments_1' => $total_installments_1,
@@ -116,7 +116,7 @@ class DetailedDisclosure extends Component
             'month' => $month,
             'value' => $value,
             'status' => $status,
-            'deferred_value' => $deferred_value
+            'deferred_value' => $deferred_value,
         ]);
         $this->getMonthlyInstallmentsList();
     }
@@ -132,29 +132,31 @@ class DetailedDisclosure extends Component
         $this->show();
         $this->monthlyInstallmentsList = '';
         $list = [];
-        $monthlyInstallment = MonthlyInstallment::where('customer_id' ,$this->list->id)->get()->toArray();
-        for($i=0; $i < ceil($this->totals['number_of_months']) ;$i++ ){
-            $month = $this->getMonth();
-            $monthData = [];
-            foreach ($monthlyInstallment as $value)
-            {
-                if ($value['month'] == $month) {
-                    $monthData = $value;
-                    break;
+        if ($this->list != null) {
+            $monthlyInstallment = MonthlyInstallment::where('customer_id' ,$this->list->id)->get()->toArray();
+            for($i=0; $i < ceil($this->totals['number_of_months']) ;$i++ ){
+                $month = $this->getMonth();
+                $monthData = [];
+                foreach ($monthlyInstallment as $value)
+                {
+                    if ($value['month'] == $month) {
+                        $monthData = $value;
+                        break;
+                    }
                 }
-            }
-            if (isset($monthData['deferred_value']) && $monthData['deferred_value']) {
-                $this->showPart[$month] = true;
-                $this->deferred_value[$month] = $monthData['deferred_value'];
+                if (isset($monthData['deferred_value']) && $monthData['deferred_value']) {
+                    $this->showPart[$month] = true;
+                    $this->deferred_value[$month] = $monthData['deferred_value'];
+                }
+
+                $list[] = [
+                    'month' => $month,
+                    'installment' => (isset($this->deferred_value[$month])) ? $this->getMonthlyInstallment() - $this->deferred_value[$month] : $this->getMonthlyInstallment(),
+                    'status' => $monthData['status'] ?? 2,
+                ];
             }
 
-            $list[] = [
-                'month' => $month,
-                'installment' => (isset($this->deferred_value[$month])) ? $this->getMonthlyInstallment() - $this->deferred_value[$month] : $this->getMonthlyInstallment(),
-                'status' => $monthData['status'] ?? 2,
-            ];
+            $this->monthlyInstallmentsList = $list;
         }
-
-        $this->monthlyInstallmentsList = $list;
     }
 }
