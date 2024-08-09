@@ -20,7 +20,7 @@ use App\Http\Controllers\AuthCoutroller;
 
 Route::get('/admin/login', function () {
     return view('admin.login');
-})->middleware('checkUserLogin');
+})->middleware('checkUserIsLogin');
 
 Route::post('post-login', [AuthCoutroller::class, 'postLogin'])->name('login.post');
 Route::get('admin/logout', [AuthCoutroller::class, 'logout'])->name('logout');
