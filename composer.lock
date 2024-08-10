@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6433d2b912426f2f1cf32259366d6d79",
+    "content-hash": "f3ce9b4820e12281388cb7bdc999601d",
     "packages": [
         {
             "name": "brick/math",
@@ -1049,6 +1049,58 @@
                 }
             ],
             "time": "2023-12-03T19:50:20+00:00"
+        },
+        {
+            "name": "hassanhelfi/number-to-arabic",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/HassanHelfi/NumToArabic.git",
+                "reference": "06829363c1338c3715f9602ffc93693afd8176a2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/HassanHelfi/NumToArabic/zipball/06829363c1338c3715f9602ffc93693afd8176a2",
+                "reference": "06829363c1338c3715f9602ffc93693afd8176a2",
+                "shasum": ""
+            },
+            "require": {
+                "php": "7.4.*|8.*"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.1"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
+                "psr-4": {
+                    "Hassanhelfi\\NumberToArabic\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "HassanHelfi",
+                    "email": "hbhassanhelfi@gmail.com"
+                }
+            ],
+            "description": "Convert numbers to Arabic words",
+            "keywords": [
+                "arabic",
+                "laravel",
+                "number",
+                "php"
+            ],
+            "support": {
+                "issues": "https://github.com/HassanHelfi/NumToArabic/issues",
+                "source": "https://github.com/HassanHelfi/NumToArabic/tree/1.0.0"
+            },
+            "time": "2023-12-01T21:26:59+00:00"
         },
         {
             "name": "laravel/framework",

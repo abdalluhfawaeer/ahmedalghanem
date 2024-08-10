@@ -9,8 +9,8 @@
                         <span wire:loading.remove wire.target="getMonthlyInstallmentsList"><i class="fas fa-plus" aria-hidden="true"></i>  عرض</span>
                         <span wire:loading wire.target="getMonthlyInstallmentsList" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                     </button>
-                    <button class="btn btn-sm mb-0 me-1" style="background: blue;color: white">طباعة</button>
                     @if(!empty($list) && $serial_number != '')
+                        <a href="/detailed_disclosure/print/{{ $list->id }}" class="btn btn-sm mb-0 me-1" style="background: blue;color: white" target="_blank">طباعة</a>
                         @if($list->status == 2)
                             <button class="btn btn-sm mb-0 me-1" style="background: green;color: white">مكتمل</button>
                         @else
@@ -288,9 +288,11 @@
                                                 <input type="text" class="form-control"  value="{{ $value['month'] }}" disabled>
                                             </td>
                                             <td>
-                                                <input type="text" class="form-control"
-                                                       value="{{ $value['installment'] }}"
-                                                       disabled>
+                                                @if($value['status'] == 1)
+                                                    <input type="text" class="form-control" value="0" disabled>
+                                                @else
+                                                    <input type="text" class="form-control" value="{{ $value['installment'] }}" disabled>
+                                                @endif
                                             </td>
                                             <td>
                                                 <button class="btn btn-sm mb-0 me-3" style="background: green;color: white" wire:loading.attr="disabled"
@@ -338,12 +340,14 @@
                                                 @endif
                                             </td>
                                             <td>
-                                                <input type="text" class="form-control"  value="sdfdsf">
+                                                <input type="text" class="form-control"  placeholder="ملاحظات" wire:model.defer="note_vale.{{$value['month']}}">
                                             </td>
                                             <td>
-                                                <a href="/customer/edit/4" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
+                                                @if($value['status'] == 1)
+                                                <a href="/received/voucher/{{ $value['id'] }}" class="text-secondary font-weight-bold text-xs" target="_blank">
                                                     <span style="color: #0d6efd">طباعة</span>
                                                 </a>
+                                                @endif
                                             </td>
                                         </tr>
                                     @endif

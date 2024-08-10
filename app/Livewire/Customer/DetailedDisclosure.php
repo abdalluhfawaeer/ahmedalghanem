@@ -19,6 +19,7 @@ class DetailedDisclosure extends Component
     public $first_installment_date = '';
     public $showPart = [];
     public $deferred_value = [];
+    public $note_vale = [];
     public $monthlyInstallmentsList;
 
     public function mount($id)
@@ -117,6 +118,7 @@ class DetailedDisclosure extends Component
             'value' => $value,
             'status' => $status,
             'deferred_value' => $deferred_value,
+            'note' => $this->note_vale[$month] ?? ''
         ]);
         $this->getMonthlyInstallmentsList();
     }
@@ -124,14 +126,13 @@ class DetailedDisclosure extends Component
     public function partPayment($month)
     {
         $this->showPart[$month] = true;
-        $this->getMonthlyInstallmentsList();
     }
 
     public function getMonthlyInstallmentsList()
     {
         $this->show();
         $this->monthlyInstallmentsList = '';
-        $list = [];
+        $list = $this->showPart = $this->deferred_value = [];
         if ($this->list != null) {
             $monthlyInstallment = MonthlyInstallment::where('customer_id' ,$this->list->id)->get()->toArray();
             for($i=0; $i < ceil($this->totals['number_of_months']) ;$i++ ){
@@ -140,6 +141,8 @@ class DetailedDisclosure extends Component
                 foreach ($monthlyInstallment as $value)
                 {
                     if ($value['month'] == $month) {
+                        $id = $value['id'];
+                        $this->note_vale[$month] = $value['note'];
                         $monthData = $value;
                         break;
                     }
@@ -148,14 +151,13 @@ class DetailedDisclosure extends Component
                     $this->showPart[$month] = true;
                     $this->deferred_value[$month] = $monthData['deferred_value'];
                 }
-
                 $list[] = [
+                    'id' => $id,
                     'month' => $month,
                     'installment' => (isset($this->deferred_value[$month])) ? $this->getMonthlyInstallment() - $this->deferred_value[$month] : $this->getMonthlyInstallment(),
                     'status' => $monthData['status'] ?? 2,
                 ];
             }
-
             $this->monthlyInstallmentsList = $list;
         }
     }

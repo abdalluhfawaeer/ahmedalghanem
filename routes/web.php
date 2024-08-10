@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthCoutroller;
+use App\Http\Controllers\MonthlyInstallmentPrint;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,9 +15,6 @@ use App\Http\Controllers\AuthCoutroller;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-//Route::get('/admin', function () {
-//    return view('admin.login');
-//})->middleware('checkUserLogin');
 
 Route::get('/admin/login', function () {
     session()->put('head-title', 'تسجيل الدخول');
@@ -113,3 +111,6 @@ Route::get('/users', function () {
     session()->put('head-title', 'النستخدمين');
     return view('admin/user/users');
 })->middleware('checkUserLogin');
+
+Route::get('received/voucher/{id}', [MonthlyInstallmentPrint::class, 'receivedVoucher'])->middleware('checkUserLogin');
+Route::get('detailed_disclosure/print/{id}', [MonthlyInstallmentPrint::class, 'detailedDisclosure']);
