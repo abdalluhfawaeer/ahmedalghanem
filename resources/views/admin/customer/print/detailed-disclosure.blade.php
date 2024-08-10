@@ -179,11 +179,11 @@
                     <tr class="heading">
                         <td>القسط الشهري :{{ $totals['monthly_installment'] }}</td>
                         <td style="text-align: unset;">مجموع الاقساط : {{ $totals['total_installments'] }}</td>
-                        <td>عدد الاشهر : {{ $totals['number_of_months'] }}</td>
+                        <td>عدد الاشهر : {{ ceil($totals['number_of_months']) }}</td>
                     </tr>
                     <tr class="heading">
-                        <td>عدد الاقساط المدفوعة :{{ $totals['total_installments_1'] }}</td>
-                        <td style="text-align: unset;">عدد الاقساط الغير مدفوعة : {{ $totals['total_installments_2'] }}</td>
+                        <td>عدد الاقساط المدفوعة :{{ ceil($totals['total_installments_1']) }}</td>
+                        <td style="text-align: unset;">عدد الاقساط الغير مدفوعة : {{ ceil($totals['total_installments_2']) }}</td>
                         <td>المتبقي :{{ $totals['total_installments_2_total'] }}</td>
                     </tr>
                     <tr class="heading">
