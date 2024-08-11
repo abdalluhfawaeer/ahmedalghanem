@@ -106,7 +106,7 @@
                 <table>
                     <tr>
                         <td class="title">
-                            أحمد عيال غانم
+                            الكشف التفصيلي
                         </td>
                         <td>
                             مرهون الى:{{ $list->pawned->name }}<br>

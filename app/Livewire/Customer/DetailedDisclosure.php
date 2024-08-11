@@ -5,6 +5,7 @@ namespace App\Livewire\Customer;
 use App\Models\Car;
 use App\Models\Customer;
 use App\Models\MonthlyInstallment;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Carbon\Carbon;
 
@@ -21,6 +22,8 @@ class DetailedDisclosure extends Component
     public $deferred_value = [];
     public $note_vale = [];
     public $monthlyInstallmentsList;
+    public $installment_value = [];
+    public $negative_value = 0;
 
     public function mount($id)
     {
@@ -77,14 +80,10 @@ class DetailedDisclosure extends Component
     public function getMonthlyInstallment()
     {
         if ($this->totalsMonthlyInstallment == 0) {
-            $total_installments = (float) $this->list->total_price - (float) $this->list->first_batch;
+            $total_installments = $this->totals['total_installments_2_total'];
             $this->totalsMonthlyInstallment = $total_installments;
         } else {
             $this->totalsMonthlyInstallment = $this->totalsMonthlyInstallment - $this->list->monthly_installment;
-
-            if (($this->totalsMonthlyInstallment < $this->list->monthly_installment) && $this->totalsMonthlyInstallment > 0) {
-                return $this->totalsMonthlyInstallment;
-            }
         }
 
         return $this->list->monthly_installment;
@@ -92,23 +91,33 @@ class DetailedDisclosure extends Component
 
     public function getMonth()
     {
+
         if ($this->first_installment_date == '') {
             $this->first_installment_date = $this->list->first_installment_date;
+            $date = Carbon::parse($this->first_installment_date);
+            $this->first_installment_date = $date->format('Y-m-d');
+            return $this->first_installment_date;
         }
         $date = Carbon::parse($this->first_installment_date);
-
         $this->first_installment_date = $date->addMonth()->format('Y-m-d');
 
         return $this->first_installment_date;
     }
 
-    public function setMonthlyInstallments($month, $status, $value ,$deferred_value = null)
+    public function setMonthlyInstallments($month, $status ,$deferred_value = null)
     {
+        $value = $this->installment_value[$month];
         if ($deferred_value == 1)
         {
             $deferred_value = $this->deferred_value[$month];
-            $value = ($value >= $deferred_value) ? $value - (float)$deferred_value : $value;
         }
+
+        if ($status == 1) {
+            if (isset($this->deferred_value[$month])) {
+                $value = $value + $this->deferred_value[$month];
+            }
+        }
+
         MonthlyInstallment::updateOrCreate([
             'customer_id' => $this->list->id,
             'month' => $month,
@@ -118,7 +127,8 @@ class DetailedDisclosure extends Component
             'value' => $value,
             'status' => $status,
             'deferred_value' => $deferred_value,
-            'note' => $this->note_vale[$month] ?? ''
+            'note' => $this->note_vale[$month] ?? '',
+            'user_name' => Auth::user()->name
         ]);
         $this->getMonthlyInstallmentsList();
     }
@@ -135,13 +145,19 @@ class DetailedDisclosure extends Component
         $list = $this->showPart = $this->deferred_value = [];
         if ($this->list != null) {
             $monthlyInstallment = MonthlyInstallment::where('customer_id' ,$this->list->id)->get()->toArray();
-            for($i=0; $i < ceil($this->totals['number_of_months']) ;$i++ ){
+            $numberOfMonths = ceil($this->totals['number_of_months']);
+            for($i=0; $i < $numberOfMonths ;$i++ ){
                 $month = $this->getMonth();
+                $valueOfMonth = 0;
                 $monthData = [];
                 foreach ($monthlyInstallment as $value)
                 {
                     if ($value['month'] == $month) {
                         $id = $value['id'];
+                        $name = $value['user_name'];
+                        $date = Carbon::parse($value['updated_at']);
+                        $date = $date->subMonth()->format('Y-m-d');
+                        $valueOfMonth = $value['value'];
                         $this->note_vale[$month] = $value['note'];
                         $monthData = $value;
                         break;
@@ -151,14 +167,40 @@ class DetailedDisclosure extends Component
                     $this->showPart[$month] = true;
                     $this->deferred_value[$month] = $monthData['deferred_value'];
                 }
+                if ($i == $numberOfMonths - 1) {
+                    $valueOfMonth = $this->totalsMonthlyInstallment - $this->list->monthly_installment;
+                } else if ($valueOfMonth == 0) {
+                    $valueOfMonth = $this->getMonthlyInstallment();
+                }
+                $this->installment_value[$month] = (isset($this->deferred_value[$month])) ? $valueOfMonth - $this->deferred_value[$month] : $valueOfMonth;
                 $list[] = [
                     'id' => $id ?? 0,
                     'month' => $month,
-                    'installment' => (isset($this->deferred_value[$month])) ? $this->getMonthlyInstallment() - $this->deferred_value[$month] : $this->getMonthlyInstallment(),
                     'status' => $monthData['status'] ?? 2,
+                    'name' => $name ?? '',
+                    'date' => $date ?? '',
                 ];
             }
+            $this->resetInstallment();
             $this->monthlyInstallmentsList = $list;
         }
+    }
+
+    public function resetInstallment()
+    {
+        foreach ($this->installment_value as $key => $value) {
+            if ($value < 0)
+            {
+                $this->negative_value = $value;
+                $this->installment_value[$key] = 0;
+                $date = Carbon::parse($key);
+                $date = $date->subMonth()->format('Y-m-d');
+                $this->installment_value[$date] = $this->installment_value[$date] + $value;
+            } else {
+                $this->negative_value = 0;
+            }
+        }
+
+        return $this->negative_value == 0 ? true : $this->resetInstallment();
     }
 }

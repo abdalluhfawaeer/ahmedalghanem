@@ -66,7 +66,7 @@ class MonthlyInstallmentPrint extends Controller
                     $deferred_value[$month] = $monthData['deferred_value'];
                 }
                 $listPrint[] = [
-                    'id' => $id,
+                    'id' => $id ?? 0,
                     'month' => $month,
                     'installment' => (isset($deferred_value[$month])) ? $this->getMonthlyInstallment($list) - $deferred_value[$month] : $this->getMonthlyInstallment($list),
                     'status' => $monthData['status'] ?? 2,
@@ -89,9 +89,11 @@ class MonthlyInstallmentPrint extends Controller
     {
         if ($this->first_installment_date == '') {
             $this->first_installment_date = $list->first_installment_date;
+            $date = Carbon::parse($this->first_installment_date);
+            $this->first_installment_date = $date->format('Y-m-d');
+            return $this->first_installment_date;
         }
         $date = Carbon::parse($this->first_installment_date);
-
         $this->first_installment_date = $date->addMonth()->format('Y-m-d');
 
         return $this->first_installment_date;

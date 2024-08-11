@@ -30,6 +30,7 @@
         <div class="row">
             <div class="col-lg-8">
                 <div class="row">
+                    <h2>مسجل عن طريق {{ $list->user_name }}</h2>
                     <div class="col-xl-6">
                         <div class="row">
                             <div class="col-md-6">
@@ -289,24 +290,24 @@
                                             </td>
                                             <td>
                                                 @if($value['status'] == 1)
-                                                    <input type="text" class="form-control" value="0" disabled>
+                                                    <input type="text" class="form-control" wire:model.defer="installment_value.{{$value['month']}}" disabled>
                                                 @else
-                                                    <input type="text" class="form-control" value="{{ $value['installment'] }}" disabled>
+                                                    <input type="text" class="form-control" wire:model.defer="installment_value.{{$value['month']}}">
                                                 @endif
                                             </td>
                                             <td>
                                                 <button class="btn btn-sm mb-0 me-3" style="background: green;color: white" wire:loading.attr="disabled"
-                                                        wire:click="setMonthlyInstallments('{{ $value['month'] }}',1,{{ $value['installment'] }})">
+                                                        wire:click="setMonthlyInstallments('{{ $value['month'] }}',1)">
                                                     <span wire:loading.remove wire.target="setMonthlyInstallments"><i class="fas fa-plus" aria-hidden="true"></i>  مدفوع</span>
                                                     <span wire:loading wire.target="setMonthlyInstallments" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                                 </button>
                                                 <button class="btn btn-sm mb-0 me-3" style="background: red;color: white" wire:loading.attr="disabled"
-                                                        wire:click="setMonthlyInstallments('{{ $value['month'] }}',2,{{ $value['installment'] }})">
+                                                        wire:click="setMonthlyInstallments('{{ $value['month'] }}',2)">
                                                     <span wire:loading.remove wire.target="setMonthlyInstallments"><i class="fas fa-plus" aria-hidden="true"></i>  غير مدفوع</span>
                                                     <span wire:loading wire.target="setMonthlyInstallments" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                                 </button>
                                                 <button class="btn btn-sm mb-0 me-3" style="background: blue;color: white" wire:loading.attr="disabled"
-                                                        wire:click="setMonthlyInstallments('{{ $value['month'] }}',3,{{ $value['installment'] }})">
+                                                        wire:click="setMonthlyInstallments('{{ $value['month'] }}',3)">
                                                     <span wire:loading.remove wire.target="setMonthlyInstallments"><i class="fas fa-plus" aria-hidden="true"></i>  مؤجل</span>
                                                     <span wire:loading wire.target="setMonthlyInstallments" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                                 </button>
@@ -320,7 +321,7 @@
                                                 @if(isset($showPart[$value['month']]) && $showPart[$value['month']])
                                                     <input type="text" class="form-control" placeholder="القمية" wire:model.defer="deferred_value.{{$value['month']}}">
                                                     <button class="btn btn-sm mb-0 me-3" style="background: black;color: white" wire:loading.attr="disabled"
-                                                            wire:click="setMonthlyInstallments('{{ $value['month'] }}',4,{{ $value['installment'] }},1)">
+                                                            wire:click="setMonthlyInstallments('{{ $value['month'] }}',4,1)">
                                                         <span wire:loading.remove wire.target="setMonthlyInstallments"><i class="fas fa-plus" aria-hidden="true"></i>  دفع</span>
                                                         <span wire:loading wire.target="setMonthlyInstallments" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                                     </button>
@@ -344,9 +345,53 @@
                                             </td>
                                             <td>
                                                 @if($value['status'] == 1)
-                                                <a href="/received/voucher/{{ $value['id'] }}" class="text-secondary font-weight-bold text-xs" target="_blank">
-                                                    <span style="color: #0d6efd">طباعة</span>
-                                                </a>
+                                                    <a href="/received/voucher/{{ $value['id'] }}" class="text-secondary font-weight-bold text-xs" target="_blank">
+                                                        <span style="color: #0d6efd">طباعة</span>
+                                                    </a>
+                                                    -
+                                                    <!-- Button trigger modal -->
+                                                    <a  class="text-danger font-weight-bold text-xs" data-bs-toggle="modal" data-bs-target="#exampleModal_{{ $value['month'] }}">
+                                                        تفاصيل
+                                                    </a>
+
+                                                    <!-- Modal -->
+                                                    <div class="modal fade" id="exampleModal_{{$value['month']}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">تفاصيل قسط {{ $value['month'] }}</h1>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <table class="table">
+                                                                        <thead>
+                                                                        <tr>
+                                                                            <th scope="col">تاريخ الدفع</th>
+                                                                            <th scope="col">المبلغ المدفوع</th>
+                                                                            <th scope="col">عن طريق</th>
+                                                                        </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                        <tr>
+                                                                            <td>
+                                                                                {{ $value['date'] }}
+                                                                            </td>
+                                                                            <td>
+                                                                                {{ $installment_value[$value['month']] }}
+                                                                            </td>
+                                                                            <td>
+                                                                                {{ $value['name'] }}
+                                                                            </td>
+                                                                        </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">اغلاق</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 @endif
                                             </td>
                                         </tr>

@@ -7,6 +7,7 @@ use App\Models\Customer;
 use App\Models\Debtor;
 use App\Models\Pawned;
 use App\Models\Sponsor;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class AddCustomer extends Component
@@ -55,14 +56,12 @@ class AddCustomer extends Component
         'sponsor_name.required' => 'الحقل اجباري',
         'sponsor_phone1.required' => 'الحقل اجباري',
         'sponsor_address.required' => 'الحقل اجباري',
-        'debtor_id_number.required' => 'الحقل اجباري',
         'serial_number.required' => 'الحقل اجباري',
         'date_of_sale.required' => 'الحقل اجباري',
         'total_price.required' => 'الحقل اجباري',
         'first_batch.required' => 'الحقل اجباري',
         'monthly_installment.required' => 'الحقل اجباري',
         'pawned_id.required' => 'الحقل اجباري',
-        'sponsor_id_number.required' => 'الحقل اجباري',
         'car_id.required' => 'الحقل اجباري',
         'first_installment_date.required' => 'الحقل اجباري',
         'serial_number.unique' => 'هذا الرقم مستخدم من قبل',
@@ -135,7 +134,6 @@ class AddCustomer extends Component
         $this->total_installments = (float) $this->total_price - (float) $this->first_batch;
         if ($this->total_installments > 0 && (float) $this->monthly_installment > 0) {
             $this->number_of_months = $this->total_installments / (float) $this->monthly_installment;
-            $this->number_of_months = number_format($this->number_of_months ,2);
         }
         $this->financing_amount = (float) $purchasing_price - (float) $this->first_batch;
         $this->profitable_financing = (float) $this->total_price - (float) $purchasing_price;
@@ -154,8 +152,6 @@ class AddCustomer extends Component
             'sponsor_name' => 'required',
             'sponsor_phone1' => 'required',
             'sponsor_address' => 'required',
-            'debtor_id_number' => 'required',
-            'sponsor_id_number' => 'required',
             'serial_number' => ['required', $uniqueSerialRule],
             'date_of_sale' => 'required',
             'total_price' => 'required',
@@ -210,7 +206,8 @@ class AddCustomer extends Component
                 'monthly_installment' => $this->monthly_installment,
                 'first_installment_date' => $this->first_installment_date,
                 'status' => 1,
-                'delete' => 0
+                'delete' => 0,
+                'user_name' => Auth::user()->name
             ]);
         } else {
             Customer::create([
@@ -225,7 +222,8 @@ class AddCustomer extends Component
                 'monthly_installment' => $this->monthly_installment,
                 'first_installment_date' => $this->first_installment_date,
                 'status' => 1,
-                'delete' => 0
+                'delete' => 0,
+                'user_name' => Auth::user()->name
             ]);
         }
 

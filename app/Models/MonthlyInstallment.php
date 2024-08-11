@@ -43,6 +43,7 @@ class MonthlyInstallment extends Model
 		'status',
 		'deferred_value',
 		'note',
+		'user_name',
 	];
 
 	public function customer()

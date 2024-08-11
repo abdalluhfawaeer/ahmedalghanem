@@ -65,7 +65,8 @@ class Customer extends Model
 		'monthly_installment',
 		'first_installment_date',
 		'status',
-		'delete'
+		'delete',
+		'user_name',
 	];
 
 	public function car()
