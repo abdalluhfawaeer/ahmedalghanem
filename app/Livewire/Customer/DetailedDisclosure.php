@@ -152,7 +152,7 @@ class DetailedDisclosure extends Component
                     $this->deferred_value[$month] = $monthData['deferred_value'];
                 }
                 $list[] = [
-                    'id' => $id,
+                    'id' => $id ?? 0,
                     'month' => $month,
                     'installment' => (isset($this->deferred_value[$month])) ? $this->getMonthlyInstallment() - $this->deferred_value[$month] : $this->getMonthlyInstallment(),
                     'status' => $monthData['status'] ?? 2,
