@@ -128,18 +128,17 @@ class AddCustomer extends Component
             $car = Car::where('id',$this->car_id)->first();
             if ($car != null)
             {
-                $purchasing_price = Car::where('id',$this->car_id)->first()->purchasing_price;
+                $purchasing_price = $car->purchasing_price;
             }
-            $purchasing_price = 0;
         }
 
         $this->total_installments = (float) $this->total_price - (float) $this->first_batch;
-        $this->number_of_months =
-            ($this->total_installments > 0 && $this->monthly_installment > 0) ?
-            $this->total_installments / (float) $this->monthly_installment : 0;
-        $this->number_of_months = number_format($this->number_of_months ,2);
-        $this->financing_amount = $purchasing_price - (float) $this->first_batch;
-        $this->profitable_financing = (float) $this->total_price - $purchasing_price;
+        if ($this->total_installments > 0 && (float) $this->monthly_installment > 0) {
+            $this->number_of_months = $this->total_installments / (float) $this->monthly_installment;
+            $this->number_of_months = number_format($this->number_of_months ,2);
+        }
+        $this->financing_amount = (float) $purchasing_price - (float) $this->first_batch;
+        $this->profitable_financing = (float) $this->total_price - (float) $purchasing_price;
     }
 
     public function save()
