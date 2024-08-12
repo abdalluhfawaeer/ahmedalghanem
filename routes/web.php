@@ -114,3 +114,8 @@ Route::get('/users', function () {
 
 Route::get('received/voucher/{id}', [MonthlyInstallmentPrint::class, 'receivedVoucher'])->middleware('checkUserLogin');
 Route::get('detailed_disclosure/print/{id}', [MonthlyInstallmentPrint::class, 'detailedDisclosure']);
+
+Route::get('/report/installments', function () {
+    session()->put('head-title', 'تقرير الاقساط');
+    return view('admin/report/installments');
+})->middleware('checkUserLogin');

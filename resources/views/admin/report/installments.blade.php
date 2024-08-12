@@ -4,7 +4,7 @@
 
 @include('layout.admin.header')
 
-<livewire:report.installments-day />
+<livewire:report.installments />
 </main>
 
 

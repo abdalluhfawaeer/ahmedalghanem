@@ -40,28 +40,13 @@
         <h6 class="me-4">التقارير</h6>
         <ul class="navbar-nav">
             <li class="nav-item">
-                <a class="nav-link " href="/user">
-                    <span class="nav-link-text me-1">المستخدمين</span>
+                <a class="nav-link " href="/">
+                    <span class="nav-link-text me-1">اقساط اليوم</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link " href="/customer">
-                    <span class="nav-link-text me-1">الزبائن</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link " href="/pawned">
-                    <span class="nav-link-text me-1">مرهون الى</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link " href="/cars">
-                    <span class="nav-link-text me-1">السيارات</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link " href="/customer/detailed_disclosure/0">
-                    <span class="nav-link-text me-1">الكشف التفصيلي</span>
+                <a class="nav-link " href="/report/installments">
+                    <span class="nav-link-text me-1">الاقساط</span>
                 </a>
             </li>
         </ul>
