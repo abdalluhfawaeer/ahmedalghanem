@@ -64,6 +64,6 @@ class Customers extends Component
     public function delete($id)
     {
         Customer::where('id', $id)
-            ->update(['delete' => 1]);
+            ->delete();
     }
 }
