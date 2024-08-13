@@ -118,6 +118,10 @@ class DetailedDisclosure extends Component
             }
         }
 
+        if ($status == 2 || $status == 3) {
+            $value = 0;
+        }
+
         MonthlyInstallment::updateOrCreate([
             'customer_id' => $this->list->id,
             'month' => $month,
@@ -169,6 +173,9 @@ class DetailedDisclosure extends Component
                 }
                 if ($i == $numberOfMonths - 1) {
                     $valueOfMonth = $this->totalsMonthlyInstallment - $this->list->monthly_installment;
+                    if ($valueOfMonth > $this->list->monthly_installment) {
+                        $valueOfMonth = $this->getMonthlyInstallment();
+                    }
                 } else if ($valueOfMonth == 0) {
                     $valueOfMonth = $this->getMonthlyInstallment();
                 }
