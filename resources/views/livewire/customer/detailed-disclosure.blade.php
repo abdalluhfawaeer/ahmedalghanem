@@ -1,16 +1,50 @@
 <div class="container-fluid py-4">
     <div class="col-lg-8">
         <div class="row">
+            <div class="col-xl-4 mb-xl-0 mb-4">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="الرقم التسلسلي" wire:model.dafer="serial_number">
+                </div>
+            </div>
             <div class="col-xl-6 mb-xl-0 mb-4">
                 <div class="input-group">
-                    <span class="input-group-text text-body"><i class="fas fa-search" aria-hidden="true"></i></span>
-                    <input type="text" class="form-control" placeholder="الرقم التسلسلي" style="border-radius: unset !important;" wire:model.dafer="serial_number">
-                    <button class="btn btn-sm mb-0 me-1" style="background: black;color: white" wire:loading.attr="disabled" wire:click="getMonthlyInstallmentsList">
+                    <button class="btn btn-sm mb-0 me-0" style="background: black;color: white" wire:loading.attr="disabled" wire:click="getMonthlyInstallmentsList">
                         <span wire:loading.remove wire.target="getMonthlyInstallmentsList"><i class="fas fa-plus" aria-hidden="true"></i>  عرض</span>
                         <span wire:loading wire.target="getMonthlyInstallmentsList" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                     </button>
                     @if(!empty($list) && $serial_number != '')
                         <a href="/detailed_disclosure/print/{{ $list->id }}" class="btn btn-sm mb-0 me-1" style="background: blue;color: white" target="_blank">طباعة</a>
+                        <a  class="btn btn-sm mb-0 me-1" data-bs-toggle="modal" data-bs-target="#earlyPayment">
+                            التسديد المبكر
+                        </a>
+                        <div wire:ignore.self class="modal fade" id="earlyPayment" tabindex="-1" aria-labelledby="earlyPayment" aria-hidden="true" >
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">التسديد المبكر</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row g-3">
+                                            <div class="col-auto">
+                                                <label for="inputPassword2" class="visually-hidden" >القيمة</label>
+                                                <input type="text" class="form-control" wire:model.defer="earlyPaymentValue">
+                                            </div>
+                                            <br>
+                                            <div class="col-auto">
+                                                <button type="submit" class="btn btn-success mb-3" wire:loading.attr="disabled" wire:click="earlyPayment">
+                                                    <span wire:loading.remove wire.target="earlyPayment"><i class="fas fa-plus" aria-hidden="true"></i>  تسديد</span>
+                                                    <span wire:loading wire.target="earlyPayment" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-secondary" data-bs-dismiss="modal">اغلاق</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         @if($list->status == 2)
                             <button class="btn btn-sm mb-0 me-1" style="background: green;color: white">مكتمل</button>
                         @else

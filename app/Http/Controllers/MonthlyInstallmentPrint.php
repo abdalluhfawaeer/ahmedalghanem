@@ -13,6 +13,8 @@ class MonthlyInstallmentPrint extends Controller
     public $first_installment_date = '';
     public $totalsMonthlyInstallment = 0;
     public $monthlyInstallment = 0;
+    public $totals = [];
+    public $installment_value = [];
 
     public function receivedVoucher(Request $request)
     {
@@ -41,6 +43,7 @@ class MonthlyInstallmentPrint extends Controller
         $totals = [];
         if (!empty($list)) {
             $totals = $this->calculator($list);
+            $this->totals = $totals;
         }
         $monthlyInstallmentsList = [];
         $this->totalsMonthlyInstallment = 0;
@@ -49,14 +52,20 @@ class MonthlyInstallmentPrint extends Controller
         $listPrint = $showPart = $deferred_value = $note_vale = [];
         if ($list != null) {
             $monthlyInstallment = MonthlyInstallment::where('customer_id' ,$list->id)->get()->toArray();
-            for($i=0; $i < ceil($totals['number_of_months']) ;$i++ ){
+            $numberOfMonths = ceil($this->totals['number_of_months']);
+            for($i=0; $i < $numberOfMonths ;$i++ ){
                 $month = $this->getMonth($list);
+                $valueOfMonth = 0;
                 $monthData = [];
                 foreach ($monthlyInstallment as $value)
                 {
                     if ($value['month'] == $month) {
                         $id = $value['id'];
-                        $note_vale[$month] = $value['note'];
+                        $name = $value['user_name'];
+                        $date = Carbon::parse($value['updated_at']);
+                        $date = $date->subMonth()->format('Y-m-d');
+                        $valueOfMonth = $value['value'];
+                        $this->note_vale[$month] = $value['note'];
                         $monthData = $value;
                         break;
                     }
@@ -65,13 +74,26 @@ class MonthlyInstallmentPrint extends Controller
                     $showPart[$month] = true;
                     $deferred_value[$month] = $monthData['deferred_value'];
                 }
+                if ($i == $numberOfMonths - 1) {
+                    $valueOfMonth = $this->totalsMonthlyInstallment - $list->monthly_installment;
+                    if ($valueOfMonth > $list->monthly_installment) {
+                        $valueOfMonth = $this->getMonthlyInstallment($list);
+                    }
+                } else if ($valueOfMonth == 0) {
+                    $valueOfMonth = $this->getMonthlyInstallment($list);
+                }
+
+                $this->installment_value[$month] = (isset($this->deferred_value[$month])) ? $valueOfMonth - $this->deferred_value[$month] : $valueOfMonth;
                 $listPrint[] = [
                     'id' => $id ?? 0,
                     'month' => $month,
-                    'installment' => (isset($deferred_value[$month])) ? $this->getMonthlyInstallment($list) - $deferred_value[$month] : $this->getMonthlyInstallment($list),
-                    'status' => $monthData['status'] ?? 2,
+                    'status' => $list->early_payment > 0 ? 1 : $monthData['status'] ?? 2,
+                    'name' => $name ?? '',
+                    'date' => $date ?? '',
+                    'installment' => $this->installment_value[$month],
                 ];
             }
+
             $monthlyInstallmentsList = $listPrint;
         }
 
@@ -102,14 +124,10 @@ class MonthlyInstallmentPrint extends Controller
     public function getMonthlyInstallment($list)
     {
         if ($this->totalsMonthlyInstallment == 0) {
-            $total_installments = (float) $list->total_price - (float) $list->first_batch;
+            $total_installments = $this->totals['total_installments_2_total'];
             $this->totalsMonthlyInstallment = $total_installments;
         } else {
             $this->totalsMonthlyInstallment = $this->totalsMonthlyInstallment - $list->monthly_installment;
-
-            if (($this->totalsMonthlyInstallment < $list->monthly_installment) && $this->totalsMonthlyInstallment > 0) {
-                return $this->totalsMonthlyInstallment;
-            }
         }
 
         return $list->monthly_installment;

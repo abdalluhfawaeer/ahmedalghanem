@@ -24,6 +24,8 @@ class DetailedDisclosure extends Component
     public $monthlyInstallmentsList;
     public $installment_value = [];
     public $negative_value = 0;
+    public $earlyPaymentValue = 0;
+    public $isOpen = false;
 
     public function mount($id)
     {
@@ -47,6 +49,7 @@ class DetailedDisclosure extends Component
             $this->monthlyInstallment = 0;
             $this->first_installment_date = '';
             $this->totals = $this->calculator($this->list);
+            $this->earlyPaymentValue = $this->list->early_payment;
         }
     }
 
@@ -110,6 +113,7 @@ class DetailedDisclosure extends Component
         if ($deferred_value == 1)
         {
             $deferred_value = $this->deferred_value[$month];
+            $value = $this->list->monthly_installment;
         }
 
         if ($status == 1) {
@@ -134,6 +138,14 @@ class DetailedDisclosure extends Component
             'note' => $this->note_vale[$month] ?? '',
             'user_name' => Auth::user()->name
         ]);
+
+        $countCheck = MonthlyInstallment::where('customer_id',$this->list->id)->where('status','1')->count();
+        $numberOfMonths = ceil($this->totals['number_of_months']);
+        if ($countCheck == $numberOfMonths) {
+            Customer::where('id',$this->list->id)->update(['status'=>2]);
+        } else {
+            Customer::where('id',$this->list->id)->update(['status'=>1]);
+        }
         $this->getMonthlyInstallmentsList();
     }
 
@@ -179,11 +191,12 @@ class DetailedDisclosure extends Component
                 } else if ($valueOfMonth == 0) {
                     $valueOfMonth = $this->getMonthlyInstallment();
                 }
+
                 $this->installment_value[$month] = (isset($this->deferred_value[$month])) ? $valueOfMonth - $this->deferred_value[$month] : $valueOfMonth;
                 $list[] = [
                     'id' => $id ?? 0,
                     'month' => $month,
-                    'status' => $monthData['status'] ?? 2,
+                    'status' => $this->list->early_payment > 0 ? 1 : $monthData['status'] ?? 2,
                     'name' => $name ?? '',
                     'date' => $date ?? '',
                 ];
@@ -209,5 +222,17 @@ class DetailedDisclosure extends Component
         }
 
         return $this->negative_value == 0 ? true : $this->resetInstallment();
+    }
+
+    public function earlyPayment()
+    {
+        Customer::where('id',$this->list->id)->update(
+            [
+                'early_payment' => $this->earlyPaymentValue,
+                'status' => 2,
+            ]
+        );
+        $this->show();
+        $this->getMonthlyInstallment();
     }
 }

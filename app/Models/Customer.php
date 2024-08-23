@@ -50,7 +50,8 @@ class Customer extends Model
 		'monthly_installment' => 'float',
 		'first_installment_date' => 'datetime',
 		'status' => 'int',
-		'delete' => 'int'
+		'delete' => 'int',
+		'early_payment' => 'float',
 	];
 
 	protected $fillable = [
@@ -67,6 +68,7 @@ class Customer extends Model
 		'status',
 		'delete',
 		'user_name',
+		'early_payment',
 	];
 
 	public function car()

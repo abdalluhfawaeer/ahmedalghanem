@@ -202,17 +202,14 @@
                         <td>دفع جزء</td>
                         <td>الحالة</td>
                         <td>الملاحظات</td>
+                        <td>تاريخ الدفع</td>
                     </tr>
                     @foreach($monthlyInstallmentsList as $key => $value)
                         <tr class="item">
                             <td>{{ ++$key }}</td>
                             <td style="text-align: start">{{ $value['month'] }}</td>
                             <td>
-                                @if($value['status'] == 1)
-                                    0
-                                @else
-                                    {{ $value['installment'] }}
-                                @endif
+                                {{ $value['installment'] }}
                             </td>
                             <td>
                                 @if(isset($showPart[$value['month']]) && $showPart[$value['month']])
@@ -233,6 +230,7 @@
                                 @endif
                             </td>
                             <td>{{ $note_vale[$value['month']] ?? '' }}</td>
+                            <td>{{ $value['date'] ?? '' }}</td>
                         </tr>
                     @endforeach
                 </table>
