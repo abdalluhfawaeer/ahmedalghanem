@@ -140,9 +140,21 @@ class MonthlyInstallmentPrint extends Controller
         $number_of_months =
             ($total_installments > 0 && $data->monthly_installment > 0) ?
                 $total_installments / (float) $data->monthly_installment : 0;
-        $total_installments_1 = MonthlyInstallment::where('customer_id' ,$data->id)->where('status',1)->count();
-        $total_installments_1_total = MonthlyInstallment::where('customer_id' ,$data->id)->where('status',1)->sum('value');
-        $total_installments_1_deferred_value = MonthlyInstallment::where('customer_id' ,$data->id)->where('status',4)->sum('deferred_value');
+        $number_of_months = ceil($number_of_months);
+        $months = $this->getMonthsReport($number_of_months, $data);
+
+        $total_installments_1 = MonthlyInstallment::where('customer_id' ,$data->id)
+            ->where('status',1)
+            ->whereIn('month', $months)
+            ->count();
+        $total_installments_1_total = MonthlyInstallment::where('customer_id' ,$data->id)
+            ->where('status',1)
+            ->whereIn('month', $months)
+            ->sum('value');
+        $total_installments_1_deferred_value = MonthlyInstallment::where('customer_id' ,$data->id)
+            ->where('status',4)
+            ->whereIn('month', $months)
+            ->sum('deferred_value');
         $total_installments_1_total = $total_installments_1_total + $total_installments_1_deferred_value;
         return [
             'first_installment_date' => $data->first_installment_date,
@@ -158,5 +170,15 @@ class MonthlyInstallmentPrint extends Controller
             'total_installments_1_total' => $total_installments_1_total,
             'total_installments_2_total' => $total_installments - $total_installments_1_total,
         ];
+    }
+
+    public function getMonthsReport($numberOfMonths ,$data)
+    {
+        $months = [];
+        for($i=0; $i < $numberOfMonths ;$i++ ){
+            $months[] = $this->getMonth($data);
+        }
+        $this->first_installment_date = '';
+        return $months;
     }
 }
