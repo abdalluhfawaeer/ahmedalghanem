@@ -60,9 +60,21 @@ class DetailedDisclosure extends Component
         $number_of_months =
             ($total_installments > 0 && $data->monthly_installment > 0) ?
             $total_installments / (float) $data->monthly_installment : 0;
-        $total_installments_1 = MonthlyInstallment::where('customer_id' ,$data->id)->where('status',1)->count();
-        $total_installments_1_total = MonthlyInstallment::where('customer_id' ,$data->id)->where('status',1)->sum('value');
-        $total_installments_1_deferred_value = MonthlyInstallment::where('customer_id' ,$data->id)->where('status',4)->sum('deferred_value');
+        $number_of_months = ceil($number_of_months);
+        $months = $this->getMonthsReport($number_of_months);
+        $total_installments_1 = MonthlyInstallment::where('customer_id' ,$data->id)
+            ->whereIn('month', $months)
+            ->where('status',1)
+            ->count();
+
+        $total_installments_1_total = MonthlyInstallment::where('customer_id' ,$data->id)
+            ->whereIn('month', $months)
+            ->where('status',1)
+            ->sum('value');
+        $total_installments_1_deferred_value = MonthlyInstallment::where('customer_id' ,$data->id)
+            ->whereIn('month', $months)
+            ->where('status',4)
+            ->sum('deferred_value');
         $total_installments_1_total = $total_installments_1_total + $total_installments_1_deferred_value;
         return [
             'first_installment_date' => $data->first_installment_date,
@@ -152,6 +164,16 @@ class DetailedDisclosure extends Component
     public function partPayment($month)
     {
         $this->showPart[$month] = true;
+    }
+
+    public function getMonthsReport($numberOfMonths)
+    {
+        $months = [];
+        for($i=0; $i < $numberOfMonths ;$i++ ){
+            $months[] = $this->getMonth();
+        }
+        $this->first_installment_date = '';
+        return $months;
     }
 
     public function getMonthlyInstallmentsList()
